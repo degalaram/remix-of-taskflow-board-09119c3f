@@ -20,7 +20,7 @@ import {
   Check
 } from 'lucide-react';
 
-const KanbanSection = ({ section, tasks, index }) => {
+const KanbanSection = ({ section, tasks, allTasks, index, isFiltering }) => {
   // Local state
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -139,7 +139,15 @@ const KanbanSection = ({ section, tasks, index }) => {
                     {section.title}
                   </h3>
                   <p className="text-xs text-muted-foreground">
-                    {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
+                    {isFiltering ? (
+                      <>
+                        {tasks.length} of {allTasks?.length || 0} {allTasks?.length === 1 ? 'task' : 'tasks'}
+                      </>
+                    ) : (
+                      <>
+                        {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
+                      </>
+                    )}
                   </p>
                 </div>
 
@@ -218,8 +226,12 @@ const KanbanSection = ({ section, tasks, index }) => {
                 {/* Empty State */}
                 {tasks.length === 0 && !isAddingTask && (
                   <div className="text-center py-8 text-muted-foreground">
-                    <p className="text-sm">No tasks yet</p>
-                    <p className="text-xs mt-1">Click + to add a task</p>
+                    <p className="text-sm">
+                      {isFiltering ? 'No matching tasks' : 'No tasks yet'}
+                    </p>
+                    {!isFiltering && (
+                      <p className="text-xs mt-1">Click + to add a task</p>
+                    )}
                   </div>
                 )}
               </div>

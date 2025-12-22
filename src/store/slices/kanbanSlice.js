@@ -47,6 +47,8 @@ const initialState = {
   isSaving: false,
   // Error message
   error: null,
+  // Search query for filtering tasks
+  searchQuery: '',
 };
 
 // Create the kanban slice
@@ -195,6 +197,10 @@ const kanbanSlice = createSlice({
       state.isSaving = false;
       state.error = action.payload;
     },
+    // Set search query
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+    },
   },
 });
 
@@ -223,6 +229,7 @@ export const {
   reorderTasksSuccess,
   saveComplete,
   saveError,
+  setSearchQuery,
 } = kanbanSlice.actions;
 
 // Export reducer

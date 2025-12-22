@@ -23,7 +23,21 @@ const KanbanBoard = () => {
   const dispatch = useDispatch();
 
   // Get kanban state from Redux store
-  const { sections, tasks, isLoading } = useSelector((state) => state.kanban);
+  const { sections, tasks, isLoading, searchQuery } = useSelector((state) => state.kanban);
+
+  // Filter tasks based on search query
+  const getFilteredTasks = (sectionId) => {
+    const sectionTasks = tasks[sectionId] || [];
+    if (!searchQuery.trim()) {
+      return sectionTasks;
+    }
+    const query = searchQuery.toLowerCase();
+    return sectionTasks.filter(
+      (task) =>
+        task.title.toLowerCase().includes(query) ||
+        (task.description && task.description.toLowerCase().includes(query))
+    );
+  };
 
   // Load kanban data on mount
   useEffect(() => {
@@ -119,13 +133,29 @@ const KanbanBoard = () => {
     );
   }
 
+  // Count total filtered tasks
+  const totalFilteredTasks = sections.reduce(
+    (acc, section) => acc + getFilteredTasks(section.id).length,
+    0
+  );
+  const totalTasks = sections.reduce(
+    (acc, section) => acc + (tasks[section.id]?.length || 0),
+    0
+  );
+
   return (
     <div className="flex-1 overflow-hidden">
       {/* Board Header */}
       <div className="p-4 md:p-6 pb-2 md:pb-4">
         <h2 className="text-xl md:text-2xl font-bold text-foreground">Kanban Board</h2>
         <p className="text-sm md:text-base text-muted-foreground mt-1">
-          Drag and drop to organize your tasks
+          {searchQuery ? (
+            <>
+              Showing {totalFilteredTasks} of {totalTasks} tasks matching "{searchQuery}"
+            </>
+          ) : (
+            'Drag and drop to organize your tasks'
+          )}
         </p>
       </div>
 
@@ -146,8 +176,10 @@ const KanbanBoard = () => {
                   <KanbanSection
                     key={section.id}
                     section={section}
-                    tasks={tasks[section.id] || []}
+                    tasks={getFilteredTasks(section.id)}
+                    allTasks={tasks[section.id] || []}
                     index={index}
+                    isFiltering={!!searchQuery}
                   />
                 ))}
 

@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
+import { setSearchQuery } from '../store/slices/kanbanSlice';
 import { LogOut, User, Zap, RefreshCw, Search, Sun, Moon, X } from 'lucide-react';
 
 const Header = () => {
@@ -13,11 +14,11 @@ const Header = () => {
   // Get auth state from Redux store
   const { user, session, isRefreshing } = useSelector((state) => state.auth);
 
-  // Get kanban saving state
-  const { isSaving } = useSelector((state) => state.kanban);
+  // Get kanban state
+  const { isSaving, searchQuery } = useSelector((state) => state.kanban);
 
-  // Search state
-  const [searchQuery, setSearchQuery] = useState('');
+  // Local search state (synced with Redux)
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Theme state
@@ -52,11 +53,17 @@ const Header = () => {
     setIsDarkMode(!isDarkMode);
   };
 
-  // Handle search (for now just console log - can be extended)
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log('Searching for:', searchQuery);
-    // Search logic can be added here
+  // Handle search input change - update Redux store in real-time
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setLocalSearchQuery(value);
+    dispatch(setSearchQuery(value));
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setLocalSearchQuery('');
+    dispatch(setSearchQuery(''));
   };
 
   // Calculate time until token expires
@@ -96,16 +103,24 @@ const Header = () => {
       {/* Center - Search Bar and Status */}
       <div className="flex-1 flex items-center justify-center gap-4 mx-4">
         {/* Search Bar - Desktop */}
-        <form onSubmit={handleSearch} className="hidden md:flex items-center relative max-w-md w-full">
+        <div className="hidden md:flex items-center relative max-w-md w-full">
           <Search className="absolute left-3 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={localSearchQuery}
+            onChange={handleSearchChange}
             placeholder="Search tasks..."
-            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full pl-10 pr-10 py-2 text-sm rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
-        </form>
+          {localSearchQuery && (
+            <button
+              onClick={handleClearSearch}
+              className="absolute right-3 p-0.5 rounded hover:bg-muted"
+            >
+              <X className="w-4 h-4 text-muted-foreground" />
+            </button>
+          )}
+        </div>
 
         {/* Search Button - Mobile */}
         <button
@@ -201,17 +216,25 @@ const Header = () => {
       {isSearchOpen && (
         <div className="md:hidden fixed inset-0 bg-background z-50 p-4">
           <div className="flex items-center gap-2">
-            <form onSubmit={handleSearch} className="flex-1 relative">
+            <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={localSearchQuery}
+                onChange={handleSearchChange}
                 placeholder="Search tasks..."
-                className="w-full pl-10 pr-4 py-3 text-sm rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full pl-10 pr-10 py-3 text-sm rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                 autoFocus
               />
-            </form>
+              {localSearchQuery && (
+                <button
+                  onClick={handleClearSearch}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              )}
+            </div>
             <button
               onClick={() => setIsSearchOpen(false)}
               className="p-2 rounded-lg hover:bg-muted"
@@ -219,6 +242,11 @@ const Header = () => {
               <X className="w-5 h-5" />
             </button>
           </div>
+          {localSearchQuery && (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Filtering tasks containing "{localSearchQuery}"
+            </p>
+          )}
         </div>
       )}
     </header>

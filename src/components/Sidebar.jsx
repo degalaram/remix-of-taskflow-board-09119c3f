@@ -16,7 +16,7 @@ import {
   X
 } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ isMobileMenuOpen, onMobileMenuClose }) => {
   // Get kanban state from Redux store
   const { sections, tasks } = useSelector((state) => state.kanban);
   
@@ -24,24 +24,10 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Mobile menu state
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   // Close mobile menu on route change
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  // Close mobile menu on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    onMobileMenuClose();
+  }, [location.pathname, onMobileMenuClose]);
 
   // Calculate task statistics
   const stats = useMemo(() => {
@@ -84,7 +70,7 @@ const Sidebar = () => {
   // Handle menu item click
   const handleMenuClick = (path) => {
     navigate(path);
-    setIsMobileMenuOpen(false);
+    onMobileMenuClose();
   };
 
   // Check if menu item is active
@@ -142,30 +128,22 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Menu Toggle Button - shown in header area on mobile */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-primary text-primary-foreground shadow-lg"
-        aria-label="Toggle menu"
-      >
-        {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
-
-      {/* Mobile Overlay */}
+      {/* Mobile Overlay - click to close menu */}
       {isMobileMenuOpen && (
         <div 
           className="md:hidden fixed inset-0 bg-black/50 z-30"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={onMobileMenuClose}
         />
       )}
 
-      {/* Sidebar - Desktop: always visible, Mobile: slide in/out */}
+      {/* Sidebar - Desktop: visible in flex layout, Mobile: overlay drawer */}
       <aside 
         className={`
-          bg-sidebar text-sidebar-foreground flex flex-col h-[calc(100vh-4rem)] sticky top-16
+          bg-sidebar text-sidebar-foreground flex flex-col
+          w-64 h-screen
           transition-transform duration-300 ease-in-out
-          fixed md:relative z-40 md:z-auto
-          w-64 md:w-64
+          md:relative md:h-auto md:w-64 md:translate-x-0 md:sticky md:top-0
+          fixed left-0 top-0 z-40
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >

@@ -186,7 +186,7 @@ const KanbanBoard = () => {
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className="flex gap-3 md:gap-4 px-4 md:px-6 pb-6 overflow-x-auto custom-scrollbar h-[calc(100vh-11rem)] md:h-[calc(100vh-12rem)]"
+              className="flex gap-2 md:gap-4 px-3 md:px-6 pb-6 overflow-x-auto custom-scrollbar h-[calc(100vh-8rem)] md:h-[calc(100vh-12rem)]"
             >
               {/* STEP 13: Render all sections */}
               {sections
@@ -206,7 +206,7 @@ const KanbanBoard = () => {
               {provided.placeholder}
 
               {/* STEP 14: Add Section Button/Form */}
-              <div className="flex-shrink-0 w-72 md:w-80">
+              <div className="flex-shrink-0 w-72 sm:w-80 md:w-96">
                 {isAddingSection ? (
                   // Form to add new section
                   <form

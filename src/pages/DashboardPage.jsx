@@ -1,12 +1,11 @@
 // Dashboard Page Component
-// Main authenticated page containing the layout and Kanban board
+// Main authenticated page containing the Kanban board
+// Note: Header and Sidebar are rendered in AuthenticatedLayout (App.jsx)
 
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { refreshTokenRequest } from '../store/slices/authSlice';
-import Header from '../components/Header';
-import Sidebar from '../components/Sidebar';
 import KanbanBoard from '../components/KanbanBoard';
 
 const DashboardPage = () => {
@@ -49,32 +48,17 @@ const DashboardPage = () => {
     return () => clearInterval(intervalId);
   }, [session, isRefreshing, dispatch]);
 
-  // Don't render Kanban if not authenticated (show a clear screen instead of blank)
+  // Don't render if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex items-center justify-center h-full">
         <p className="text-muted-foreground">Redirecting to login…</p>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-kanban-bg flex flex-col">
-      {/* Header */}
-      <Header />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <KanbanBoard />
-        </main>
-      </div>
-    </div>
-  );
+  // Only render the Kanban board - Header and Sidebar are in AuthenticatedLayout
+  return <KanbanBoard />;
 };
 
 export default DashboardPage;

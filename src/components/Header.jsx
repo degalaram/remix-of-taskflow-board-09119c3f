@@ -6,9 +6,9 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slices/authSlice';
 import { setSearchQuery } from '../store/slices/kanbanSlice';
-import { LogOut, User, Zap, RefreshCw, Search, Sun, Moon, X } from 'lucide-react';
+import { LogOut, User, Zap, RefreshCw, Search, Sun, Moon, X, Menu } from 'lucide-react';
 
-const Header = () => {
+const Header = ({ onMenuToggle, isMobileMenuOpen }) => {
   // STEP 1: Get dispatch function
   const dispatch = useDispatch();
 
@@ -90,8 +90,17 @@ const Header = () => {
 
   return (
     <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 md:px-6 sticky top-0 z-50">
-      {/* Left side - Logo and App Name */}
-      <div className="flex items-center gap-3 ml-10 md:ml-0">
+      {/* Left side - Logo, Menu Button and App Name */}
+      <div className="flex items-center gap-3">
+        {/* Mobile Menu Toggle Button */}
+        <button
+          onClick={onMenuToggle}
+          className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+        
         <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
           <Zap className="w-5 h-5 text-primary-foreground" />
         </div>

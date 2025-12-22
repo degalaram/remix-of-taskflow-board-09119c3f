@@ -47,14 +47,16 @@ const PublicRoute = ({ children }) => {
 
 // STEP 3: Layout Component for authenticated pages
 const AuthenticatedLayout = ({ children }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  
   return (
     <div className="min-h-screen bg-kanban-bg flex flex-col">
       {/* Header at top */}
-      <Header />
+      <Header onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} isMobileMenuOpen={isMobileMenuOpen} />
       
       {/* Sidebar and main content below */}
       <div className="flex-1 flex overflow-hidden">
-        <Sidebar />
+        <Sidebar isMobileMenuOpen={isMobileMenuOpen} onMobileMenuClose={() => setIsMobileMenuOpen(false)} />
         <main className="flex-1 flex flex-col overflow-hidden">
           {children}
         </main>

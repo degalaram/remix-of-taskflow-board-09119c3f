@@ -97,7 +97,7 @@ const KanbanSection = ({ section, tasks, allTasks, index, isFiltering }) => {
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className={`flex-shrink-0 w-72 md:w-80 bg-kanban-section rounded-xl border border-border flex flex-col max-h-full transition-shadow ${
+          className={`flex-shrink-0 w-72 sm:w-80 md:w-96 bg-kanban-section rounded-xl border border-border flex flex-col max-h-full transition-shadow ${
             snapshot.isDragging ? 'shadow-lg ring-2 ring-primary/20' : ''
           }`}
         >
